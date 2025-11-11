@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joinha Feedback Online</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 100px;
+    background-color: #f5f5f5;
+  }
+  .emoji {
+    font-size: 80px;
+    margin: 30px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .emoji:hover {
+    transform: scale(1.2);
+  }
+  .contador {
+    font-size: 24px;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+  <h2>Dê seu feedback!</h2>
+  <div>
+    <span id="positivo" class="emoji">👍</span>
+    <span id="negativo" class="emoji">👎</span>
+  </div>
+  <div>
+    <span class="contador" id="contPos">0</span>
+    <span style="margin: 0 50px;"></span>
+    <span class="contador" id="contNeg">0</span>
+  </div>
+
+<script>
+// --- CONFIGURAÇÃO ---
+// Substitua este link pelo seu JSONBin ou outro backend se quiser
+const API_URL = "https://api.jsonbin.io/v3/b/6732523fad19ca34f8cf1234"; // exemplo
+const API_KEY = "SEU_TOKEN_AQUI"; // opcional (para editar)
+
+// --- FUNÇÕES ---
+async function carregarVotos() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    const votos = data.record || { positivos: 0, negativos: 0 };
+    document.getElementById("contPos").textContent = votos.positivos;
+    document.getElementById("contNeg").textContent = votos.negativos;
+  } catch (err) {
+    console.log("Erro ao carregar:", err);
+  }
+}
+
+async function votar(tipo) {
+  try {
+    const pos = parseInt(document.getElementById("contPos").textContent);
+    const neg = parseInt(document.getElementById("contNeg").textContent);
+    const votos = {
+      positivos: tipo === "positivo" ? pos + 1 : pos,
+      negativos: tipo === "negativo" ? neg + 1 : neg,
+    };
+    document.getElementById("contPos").textContent = votos.positivos;
+    document.getElementById("contNeg").textContent = votos.negativos;
+
+    await fetch(API_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(votos),
+    });
+  } catch (err) {
+    console.log("Erro ao votar:", err);
+  }
+}
+
+// --- EVENTOS ---
+document.getElementById("positivo").onclick = () => votar("positivo");
+document.getElementById("negativo").onclick = () => votar("negativo");
+
+// Carrega ao abrir
+carregarVotos();
+</script>
+</body>
+</html>
