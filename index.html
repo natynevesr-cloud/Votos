@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Votos - Joinha</title>
+  <style>
+    body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
+    button { font-size: 40px; margin: 20px; cursor: pointer; border: none; background: none; }
+    h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>Deixe seu voto!</h1>
+  <button id="positivo">👍</button>
+  <button id="negativo">👎</button>
+
+  <h2 id="resultado"></h2>
+
+  <script>
+    let positivos = 0;
+    let negativos = 0;
+    document.getElementById("positivo").onclick = () => {
+      positivos++;
+      atualizar();
+    };
+    document.getElementById("negativo").onclick = () => {
+      negativos++;
+      atualizar();
+    };
+    function atualizar() {
+      document.getElementById("resultado").innerText =
+        `👍 ${positivos}   👎 ${negativos}`;
+    }
+  </script>
+</body>
+</html>
