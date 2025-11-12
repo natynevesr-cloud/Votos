@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votos Joinhas</title>
+  <style>
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .botoes {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    .contador {
+      font-size: 24px;
+      color: #555;
+    }
+    .agradecimento {
+      margin-top: 30px;
+      font-size: 20px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Vote abaixo!</h2>
+
+  <div class="botoes">
+    <button onclick="votar('positivo')" style="background:none;border:none;cursor:pointer;">👍</button>
+    <button onclick="votar('negativo')" style="background:none;border:none;cursor:pointer;">👎</button>
+  </div>
+
+  <div class="contador">
+    👍 <span id="positivo">0</span> &nbsp;&nbsp;&nbsp;
+    👎 <span id="negativo">0</span>
+  </div>
+
+  <div class="agradecimento">Agradecemos a participação!</div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBNwudrSVV1CMibj1YAqu96Ux--0BgnI_0",
+      authDomain: "votos-joinhas.firebaseapp.com",
+      projectId: "votos-joinhas",
+      storageBucket: "votos-joinhas.firebasestorage.app",
+      messagingSenderId: "837415387505",
+      appId: "1:837415387505:web:296d7d18f3c83518cc76d0",
+      measurementId: "G-SFVPDJTY78"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function votar(tipo) {
+      const ref = doc(db, "votos", "total");
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { positivo: 0, negativo: 0 });
+      }
+      if (tipo === "positivo") {
+        await updateDoc(ref, { positivo: increment(1) });
+      } else {
+        await updateDoc(ref, { negativo: increment(1) });
+      }
+      atualizar();
+    }
+
+    async function atualizar() {
+      const ref = doc(db, "votos", "total");
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const data = snap.data();
+        document.getElementById("positivo").innerText = data.positivo;
+        document.getElementById("negativo").innerText = data.negativo;
+      }
+    }
+
+    atualizar();
+    setInterval(atualizar, 5000);
+  </script>
+
+</body>
+</html>
